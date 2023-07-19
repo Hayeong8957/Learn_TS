@@ -1,5 +1,5 @@
-const a: string = "5";
-const a2 = "5";
+const a: string = '5';
+const a2 = '5';
 const b: number = 5;
 const c: boolean = true;
 const d: undefined = undefined;
@@ -12,12 +12,14 @@ const g: true = true;
 
 let aa = 123;
 // 문자열 형식을 as라는 키워드로 강제로 다른 녀석으로 바꿔줄 수 있다.
-aa = 'hello' as unknown as number; 
+aa = 'hello' as unknown as number;
 // 하지만 얘는 js컴파일하면 사라짐
 // let aa = 123;
 // aa = 'hello';
 
-function add1(x: number, y: number): number { return x + y } // fuction 일 때는 : 뒤에 타입이 나옴
+function add1(x: number, y: number): number {
+  return x + y;
+} // fuction 일 때는 : 뒤에 타입이 나옴
 const add2: (x: number, y: number) => number = (x, y) => x + y; // 화살표 함수 일 떄는 => 뒤에 타입이 나옴
 
 /* 함수 type alias */
@@ -36,13 +38,13 @@ const add4: Add4 = (x, y) => x + y;
 // }
 
 /* 객체 타입 */
-const obj: { lat: number, lon: number } = { lat: 37.5, lon: 127.5 };
+const obj: { lat: number; lon: number } = { lat: 37.5, lon: 127.5 };
 
 /* 배열 타입 */
-const arr: string[] = ["a", "b", "c"];
-const arr2: Array<string> = ["a", "b", "c"]; // 제네릭
+const arr: string[] = ['a', 'b', 'c'];
+const arr2: Array<string> = ['a', 'b', 'c']; // 제네릭
 /* 튜플 -> 길이가 고정된 배열 */
-const arr3: [number, number, string] = [123, 456, "abc"];
+const arr3: [number, number, string] = [123, 456, 'abc'];
 
 /************************************************************************************************************/
 
@@ -64,8 +66,7 @@ const five: string = '5'; // 오히려 이것이 문제 있는 코드임
 try {
   const array = [];
   array.push('hello');
-  
-} catch(error) {
+} catch (error) {
   error;
 }
 
@@ -77,7 +78,7 @@ try {
 // const head: Element = document.querySelector('#head')!;
 // console.log(head);
 // head가 element거나 null -> 모든 가능성을 고려해준다.
-// 만약 head가 있는 것이 무조건 확실하다싶으면 뒤에 느낌표를 넣어주면 된다. 
+// 만약 head가 있는 것이 무조건 확실하다싶으면 뒤에 느낌표를 넣어주면 된다.
 // null이나 undefined가 아님을 보증하는 방식이다.
 
 const head = document.querySelector('#head');
@@ -87,3 +88,43 @@ if (head) {
   head.innerHTML = 'hello';
   console.log(head);
 }
+
+/************************************************************************************************************/
+
+/* 원시 래퍼 타입 */
+const aaa: string = 'hello';
+const bbb: String = 'hell';
+// string과 String은 서로 다른 타입이다. String은 래퍼 개체이다.
+
+// function c(aaa1: string, bbb1: string) {};
+// c(aaa, bbb);
+
+/* 템플릿 리터럴 타입 */
+type World = 'world' | 'hell';
+const aaaa: World = 'world'; // 이부분에서 타입을 World로 지정했기에 World타입의 값인 world가 자동완성 된다.
+// 타입스크립트 자동완성 키 : ctrl + space
+
+const bbbb = `hello ${aaaa}`;
+
+// 템플릿 리터럴 변수에 타입을 넣어도 된다. 타입의 값이 그대로 들어가게 됨
+// type Greeting = "hello world"
+type Greeting = `hello ${World}`; // -> World 타입이 하나일 때
+
+// 현실적인 응용법은
+const ccc: Greeting = 'hello world';
+
+/* rest */
+// rest도 타이핑해줄 수 있다.
+function rest(...args: string[]) {
+  console.log(args); // ["1", "2", "3"]
+}
+
+rest('1', '2', '3');
+
+function rest2(a: number, ...args: string[]) {
+  console.log(a, args); // 1, ["1", "2", "3"]
+}
+
+rest2(1, '1', '2', '3');
+
+/* 튜플 */
