@@ -134,3 +134,165 @@ tuple.push('hello'); // 튜플인데 push가 가능함 -> 위에 코드로 요�
 // 사소한 오류임
 
 /************************************************************************************************************/
+
+// enum -> 변수들을 하나의 그룹으로 묶고 싶을 때
+const enum EDirection {
+  Up, // 0
+  Down, // 1
+  Left, // 2
+  Right, // 3
+}
+
+const up = EDirection.Up; // up -> 0
+const left = EDirection.Left; // left -> 2
+
+// 문자열도 다 됨
+const enum EDirection2 {
+  Up = '123', // '123'
+  Down = 'hello', // 'hello'
+  Left = 'wow', // 'wow'
+  Right = '456', // '456'
+}
+
+const ODirection = {
+  Up: 0,
+  Down: 1,
+  Left: 2,
+  Right: 3,
+} as const;
+
+type Direction = (typeof ODirection)[keyof typeof ODirection];
+function run(dir: Direction) {}
+
+const objj = { a: '123', b: 'hello', c: 'world' } as const;
+// type Key = keyof typeof objj;
+type Key2 = (typeof objj)[keyof typeof objj];
+// obj는 자바스크립트 값임 -> 자바스크립트 값은 타입으로 쓸 수 없음 -> 타입으로 쓰고 싶으면 typeof를 붙여줌 -> 거기에 keyof를 하면 "a", "b", "c"를 뽑아낸다. -> 그리고 그걸 Key라는 타입으로 만듦
+
+function walk(dir: EDirection) {}
+walk(EDirection.Left); // function walk(dir: EDirection) {}
+run(ODirection.Right); // function run(dir: Direction): void
+
+/************************************************************************************************************/
+
+/* interface vs type */
+// 둘 다 상속의 개념으로 사용할 수 있다.
+interface PeopleInterface {
+  name: string;
+  age: number;
+}
+
+interface StudentInterface extends PeopleInterface {
+  school: string;
+}
+
+type PeopleType = {
+  name: string;
+  age: number;
+};
+
+type StudentType = PeopleType & {
+  school: string;
+};
+
+const people: PeopleInterface = {
+  name: 'hayeong',
+  age: 23,
+};
+
+const student: StudentInterface = {
+  name: 'hayeong',
+  age: 23,
+  school: 'hanyangUniv.',
+};
+
+// 선언적 확장
+// type은 새로운 속성을 추가하기 위해 다시 같은 이름으로 선언할 수 없지만,
+// interface는 항상 선언적 확장이 가능
+
+interface AA {
+  a: string;
+}
+interface AA {
+  b: string;
+}
+const obj1: AA = { a: 'hello', b: 'world' };
+
+// error: 'BB' 식별자가 중복되었습니다.ts(2300)
+// type BB = { a: string };
+// type BB = { b: string };
+// const obj2: BB = { a: 'hello', b: 'world' };
+
+type Animal = { breath: true };
+type Poyouryu = Animal & { breed: true };
+type Human = Poyouryu & { think: true };
+
+const hayeong: Human = { breath: true, breed: true, think: true };
+
+interface Animal2 {
+  breath: true;
+}
+interface Poyouryu2 extends Animal2 {
+  breed: true;
+}
+interface Human2 extends Poyouryu2 {
+  think: true;
+}
+const hayeon2: Human2 = { breath: true, breed: true, think: true };
+
+// type의 좋은 점은 간단하게 쓸 수 있고
+// interface는 타입처럼 욱여넣을 수 없기 때문에 extends확장이라는 개념이 명확함
+
+/************************************************************************************************************/
+
+// error: '+' 연산자를 'string | number' 및 'string | number' 형식에 적용할 수 없습니다.ts(2365)
+// function add(x: string | number, y: string | number): string | number {
+//   return x + y;
+// }
+// add(1, 2);
+// add('1', '2');
+// add(1, '2');
+type A = {
+  a: string;
+};
+type B = {
+  b: string;
+};
+
+const abab1: A | B = { a: 'hello', b: 'world' }; // A 또는 B -> A도 만족하고 B도 만족하기에 됨 -> A와 B 둘 중에 하나만 있으면 만족
+const abab2: A | B = { a: 'hello' }; // 하나를 지워도 된다.
+
+const baba1: A & B = { a: 'hello', b: 'world' }; // A 와 B 둘 다 만족시켜야 함 -> 모든 속성이 다 있어야 함
+// const baba2: A & B = { a: 'hello' }; // A 와 B 둘 다 만족시켜야 함 -> error
+
+/************************************************************************************************************/
+
+// 큰 타입에 작은 타입을 넣으려 시도
+// 작은 타입에 큰 타입을 넣으려 시도
+type AAA = string | number; // 이게 더 넓은 타입 -> 합집합
+type BBB = string;
+// 여기서 룰은 좁 -> 넓으로 대입이 가능, 넓 -> 좁 대입 불가능
+// never -> 공집합, any -> 전체집합 느낌
+
+type BBB2 = string;
+type CCC = string & number; // 이게 더 좁은 타입
+
+// 객체는 상세할수록 타입이 좁다고 생각 -> 구체적일수록 타입이 좁음
+type Aobj = { name: string };
+type Bobj = { age: number };
+type Cobj = { name: string; age: number };
+// type Cobj = Aobj & Bobj이거랑 위의 코드랑 같음
+
+type ABObj = Aobj | Bobj; // 합집합으로 만듦 -> 타입이 넓음
+
+type Cobj2 = Aobj & Bobj;
+const ab: ABObj = { name: 'hayeong', age: 23 };
+const ab2: ABObj = { name: 'hayeong' };
+const ab3: ABObj = ab; // 좁은 타입을 넓은 타입에 넣는 건 잘 됨
+
+const c2: Cobj2 = { name: 'hayeong', age: 23 };
+// const c3: Cobj = ab2; // 넓은 타입을 좁은 타입에 넣으려다 보니 에러: 'age' 속성이 'Aobj' 형식에 없지만 'Cobj' 형식에서 필수입니다.ts(2741)
+
+// const c4: Cobj = { name: 'hayeong', age: 23, married: false };
+// type A = { hello: string };
+// const a: A = { hello: 'world', why: 'error' };
