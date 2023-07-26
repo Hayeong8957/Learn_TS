@@ -296,3 +296,254 @@ const c2: Cobj2 = { name: 'hayeong', age: 23 };
 // const c4: Cobj = { name: 'hayeong', age: 23, married: false };
 // type A = { hello: string };
 // const a: A = { hello: 'world', why: 'error' };
+
+/************************************************************************************************************/
+
+/* void */
+// void 타입이라는 것은 리턴값이 없는 함수
+// 대신 return undefined는 가능, return null은 안됨
+// 리턴값이 아예 없거나 단순히 return;만 있는 함수
+function afunc(): void {
+  // function afunc(): void
+  return;
+}
+
+const afunc2 = afunc(); // const afunc2: void
+
+interface Human3 {
+  talk: () => void;
+}
+
+const human: Human3 = {
+  talk() {
+    return 'abc'; // 근데 여기서는 에러가 안남!?
+  },
+};
+
+// 📌 void를 세 가지로 기억하자.
+// 1. void func 선언 시 리턴값이 void인 것
+function bfunc(): void {
+  return;
+}
+// 함수의 직접적인 리턴값이 void인 경우에만 return 값이 들어가면 안됨.
+
+// 2. 메서드로 선언할 때 void
+interface Human4 {
+  talk: () => void;
+}
+// 리턴값이 있어도 됨
+const human2: Human4 = {
+  talk() {
+    return 'abc';
+  },
+};
+
+const human3 = human2.talk();
+// 우리는 이것이 'abc'값을 뱉어낼 것이라 생각하지만
+// 애석하게도 메서드의 void는 리턴이 무엇이든 무시를 하기에
+// human3의 타입도 void이다.
+// 애초에 리턴이 void면 리턴값을 넣지 않는 게 좋음.
+
+// 3. 매개변수가 void가 들어간 것
+// 함수 또는 메서드의 리턴값을 사용하지 않겠다. -> 리턴값이 없다. -> 리턴값이 뭐든 간에 사용하지 않겠다는 의미
+function cfunc(callback: () => void): void {}
+// 리턴값이 있어도 됨
+cfunc(() => {
+  return 3;
+});
+
+// 예시
+// 함수 선언부
+// function forEach(arr: number[], callback: (el: number) => undefined): void;
+function forEach(arr: number[], callback: (el: number) => void): void;
+// 함수 구현부
+function forEach() {}
+// 함수 구현부를 만들기 싫을 때 declare를 선언하면 됨 -> 에러가 사라지지만, 자바스크립트로 면환하면 사라짐
+declare function forEach2(
+  arr: number[],
+  callback: (el: number) => undefined,
+): void;
+
+let target: number[] = [];
+forEach([1, 2, 3], (el) => target.push(el)); // error: 'number' 형식은 'undefined' 형식에 할당할 수 없습니다.ts(2322)
+// 에러나는 이유 : push는 리턴값이 number, 해당 함수는 콜백 함수
+// function forEach 콜백의 리턴값을 number로 해주면 됨
+// + void로 해도 에러가 안남 => 매개변수에서 쓰이는 void는 실제 리턴값이 뭐든 상관하지 않겠다.
+// return 값을 없애도 쓸 수 있게 함
+
+// void냐 아니냐에 따라 함수 표현이 제한이 됨
+// 아래 둘 다 정상적인 코드이다. 만약 위의 forEach 콜백 리턴이 void가 아니고 undefined라면 아래와 같은 에러가 나온다.
+forEach([1, 2, 3], (el) => {
+  target.push(el); // number형식은 undefined형식에 할당 X
+});
+forEach([1, 2, 3], (el) => target.push(el)); // void형식은 undefined형식에 할당 X
+
+// void는 undefined랑 다르다.
+
+/************************************************************************************************************/
+
+/* unknown, any */
+// any를 쓸 바에는 unknown을 쓴다고 원칙적으로 기억
+// any문제점 : 타입 검사를 포기해버림
+// unknown: 알 수 없는 형식이라 에러가 뜸 -> 우리가 직접 타입을 정해줘야함 -> 정해진 타입을 쓸 수 있게
+// => 지금 당장은 내가 타입을 모르겠을 때 쓰는 것
+interface ATalk {
+  talk: () => void;
+}
+const atalk: ATalk = {
+  talk() {
+    return 3;
+  },
+};
+
+const btalk: unknown = atalk.talk();
+(btalk as ATalk).talk();
+
+// unknown이 나오는 가장 흔한 경우
+// Error은 타입스크립트에서 제공하는 기본 에러 타입.
+// 에러는 우리가 대비하지 못한 뜬금없는 에러가 나오기에
+// 나중에 우리가 에러의 타입이 뭔지 직접 지정해야함
+// axios -> AxiosError
+try {
+} catch (error) {
+  // var error: unknown
+  (error as Error).message; // 이런식으로 만들어줘야함
+}
+
+/************************************************************************************************************/
+
+/* 타입가드 */
+// 아래 코드는 정상적으로 작동
+function numOrStr(a: number | string) {
+  if (typeof a === 'string') {
+    // 이런식으로 타입가드 기법을 사용
+    a.split(',');
+  } else {
+    a.toFixed(1);
+  }
+}
+numOrStr('123');
+numOrStr(1);
+
+// 아래 코드는 에러남
+// a가 string일 가능성도 있기 때문에 경고를 띄워줌
+// 'string | number' 형식에 'toFixed' 속성이 없습니다. 'string' 형식에 'toFixed' 속성이 없습니다.ts(2339)
+// 에러메세지가 10줄 넘어가는 경우가 있는데, 결국에 마지막줄만 보면 됨
+function numOrStr2(a: number | string) {
+  (a as number).toFixed(1); // unknown일 때 빼고 as 사용하지 말자.
+}
+
+// class 명 자체가 타입 자리에 올 수 있다.
+// 대신 그 class를 의미하는 게 아니고 인스턴스를 의미하는 것
+class AClass {
+  aaa() {}
+}
+
+class BClass {
+  bbb() {}
+}
+
+function AOrB(param: AClass | BClass) {
+  if (param instanceof AClass) {
+    param.aaa();
+  }
+}
+
+// AOrB(AClass); // 클래스 자체가 아니라 인스턴스를 의미하기에 바로 그 클래스를 넣으면 안됨
+AOrB(new AClass()); // 이렇게 인스턴스를 넣어줘야함
+
+/* 커스텀 타입 가드 */
+
+interface Cat {
+  meow: number;
+}
+interface Dog {
+  bow: number;
+}
+
+// 리턴값에 is가 들어가면 커스텀 타입 가드이다.
+// 커스텀 타입 가드 함수는 어떨 때 쓰냐?
+// if문 안에 써서 타입스크립트에게 정확한 타입이 뭔지 알려주는 것
+// 대신 타입 판별은 직접 코딩해야함.
+
+function catOrDog(a: Cat | Dog): a is Dog {
+  // 타입 판별을 여러분이 직접 만드세요.
+  // 강아지려면
+  if ((a as Cat).meow) {
+    return false; // meow 속성이 없어야한다.
+  }
+  return true;
+}
+
+// 타입을 구분해주는 커스텀 함수를 여러분이 직접 만들 수 있어요.
+function pet(a: Cat | Dog) {
+  if (catOrDog(a)) {
+    console.log(a.bow); // a가 Dog라는 것을 밝혀냄
+  }
+  if ('meow' in a) {
+    console.log(a.meow);
+  }
+}
+
+const cat: Cat | Dog = { meow: 3 };
+
+if (catOrDog(cat)) {
+  console.log(cat.meow);
+}
+if ('meow' in cat) {
+  console.log(cat.meow);
+}
+
+// Promise 예제
+
+const isRejected = (
+  input: PromiseSettledResult<unknown>,
+): input is PromiseRejectedResult => {
+  // PromiseSettledResult를 PromiseRejectedResult로 타입 가드
+  return input.status === 'rejected';
+};
+
+const isFulfilled = <T>(
+  input: PromiseSettledResult<T>,
+): input is PromiseFulfilledResult<T> => {
+  // PromiseSettledResult를 PromiseFulfilledResult로 타입 가드
+  return input.status === 'fulfilled';
+};
+
+// Promise 를 실행하면 pending상태에서 settled가 된다.
+// settled에는 resolved(then)와 rejected(catch)가 있다.
+// 성공했든 실패했든 일단 settled는 맞음
+// PromiseSettledResult안에는 PromiseRejectedResult와 PromiseFulfilledResult가 있다.
+const promises = await Promise.allSettled([
+  Promise.resolve('a'),
+  Promise.resolve('b'),
+]);
+
+// 우리는 정확하게 성공한 것만 구별하고 싶다.
+const success = promises.filter(isFulfilled);
+// 우리는 정확하게 여기서 에러들만 구별하고 싶다.
+const errors = promises.filter(isRejected);
+
+export { success, errors };
+
+/************************************************************************************************************/
+
+// 4.8 ver update
+// {} , Object : 모든 타입, 모양이 객체라 착각하면 안된다.(null과 undefined 제외)
+// object: 실제 객체 타입, 객체만 받을 수 있다.
+const x: {} = 'hello'; // 문자열도 대입이 된다.
+const y: Object = 'hi';
+// const x2: object = 'hi'; // error
+const x2: object = { hi: 'world' };
+const y2: object = { hello: 'world' };
+const z: unknown = 'hi';
+
+// unknown타입도 모든 값을 다 받을 수 있는데 any보다 좀 더 낫다고 말했었다.
+// 이번에 나온게 unknown = {} | null | undefined
+if (z) {
+  z; // unknown인 변수를 if문에 넣으면 그대로 unknown이 나왔었다.
+  // 근데 지금은 const z: {}로 타입이 나오게 된다.
+  // if에 들어가면 null과 undefined가 걸러져서 {}가 나오게 되는 것.
+} else {
+  // 여기에 null, undefined가 들어가짐
+}
