@@ -547,3 +547,34 @@ if (z) {
 } else {
   // 여기에 null, undefined가 들어가짐
 }
+
+/************************************************************************************************************/
+
+interface AAAA {
+  readonly a: string;
+  b: string;
+}
+
+const aAaAa: AAAA = {a: 'hello', b: 'world'};
+// aAaAa.a = '123'; // error: 읽기 전용 속성이므로 'a'에 할당할 수 없습니다.ts(2540)
+// readonly 를 사용해서 우리가 실수로 바꾸는 것을 강제로 금지
+
+/* 인덱스드 시그니처 */
+// ex) 어떤 키든 상관없이, 모든 value의 type이 다 문자였으면 좋겠다
+// type BBBB ={
+//   a:string, b:string, c:string, d:string, e:string //...
+// }
+type BBBB ={
+ [key: string]: string
+}
+
+/* mapped type */
+// key type을 좁힐 수 있음
+// interface로는 또는이 안됨 |를 쓰려면 type을 써야함
+type BBBBBKey = 'Human' | 'Mammal' | 'Animal'; 
+type BBBBB = {[key in BBBBBKey]: number};
+const bbbbbb: BBBBB = {
+  Human: 123, Mammal: 5, Animal: 7 // 이런식으로 제한을 걸어줄 수 있다.
+}
+
+// 최대한 정확한 타입을 주는 것이 좋음
