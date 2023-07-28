@@ -676,3 +676,21 @@ function add6<T extends (...args: any) => any>(x: T): T {return x};
 // 클래스 자체를 넣고 싶다면 생성자 타입
 function add7<T extends abstract new (...args: any) => any>(x: T): T {return x};
 add7(Bclass);
+
+/************************************************************************************************************/
+
+/** 기본값 타이핑 */
+// 타입스크립트가 추론을 못 할 때 기본값을 쓰는 거고,
+// 기본값이 있더라도 추론을 한다면 기본값을 덮어씌워지게 됨
+const a3 = (b: number = 3, c: number = 4 ) => {
+  return '3';
+}
+
+const a4 = (b: { children: string } = { children: 'hayeong' }) => {
+
+}
+// 기본값이 있을 때 타이핑 헷갈림 주의
+// 제네릭도 기본값 넣을 수 있음
+const add8 = <T = unknown>(x: T, y: T) => ({x, y});
+const add9 = <T extends unknown>(x: T, y: T) => ({x, y});
+const add10 = <T,>(x: T, y: T) => ({x, y});
