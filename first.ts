@@ -578,4 +578,101 @@ const bbbbbb: BBBBB = {
 }
 
 // 최대한 정확한 타입을 주는 것이 좋음
- 
+
+/************************************************************************************************************/
+
+class Bclass {
+  private readonly a: string = '123';
+  protected b: string = 'world'; 
+  public c: string = 'wow';
+
+  method() {
+    console.log(this.a);
+  }
+}
+
+class C extends Bclass {
+  method() {
+    // console.log(this.a); // 'a' 속성은 private이며 'Bclass' 클래스 내에서만 액세스할 수 있습니다.ts(2341)
+    console.log(this.b);
+    console.log(this.c);
+  }
+}
+// new C().a; // 'a' 속성은 private이며 'Bclass' 클래스 내에서만 액세스할 수 있습니다.ts(2341)
+// new C().b; //'b' 속성은 보호된 속성이며 'Bclass' 클래스 및 해당 하위 클래스 내에서만 액세스할 수 있습니다.ts(2445)
+
+/************************************************************************************************************/
+
+/* 옵셔널 */
+// 있어도 되고 없어도 되게 하는 타입
+// 물음표 -> 있어도 되고 없어도 된다. 
+// 물음표는 항상 속성명 뒤에
+function abc(a: number, b?:number, c?:number){}
+function abcd(...args: number[]){}  // 전부 다 받고 싶으면 이렇게 지정
+
+abc(1);
+abc(1, 2);
+abc(1, 2, 3);
+abcd(1, 2, 3, 4);
+
+let obj2: {a: string, b?: string} = {a: 'hello', b: 'world'}
+obj2 = {a: 'hello'}
+
+/* 제네릭 */
+// 제네릭이 왜 필요한가
+function addFunc(x: string | number, y: string | number): string | number {
+  return x ;
+}
+
+// 원하는 동작 방식
+addFunc(1,2); // 3
+addFunc('1', '2'); // 12
+
+// 이렇게 될 가능성을 배제하지 못했음 이걸 안되게 해야함
+addFunc(1, '2'); // '12'
+addFunc(1, '2'); // '12'
+
+// 이걸 가능하게 하는 게 제네릭
+// -> 타입을 변수처럼 만드는 것, 지금 타입이 뭔지는 모르겠는데, 실제로 사용될 때 그때 타입이 지정됨
+// 함수를 선언할 때 말고, 함수를 쓸 때 타입이 정해지게 됨
+// 범위가 넓다.
+
+// 매개변수를 같은 타입으로 만들어줄 수 있다.
+function addFunc2<T>(x: T, y: T): T { return x  } // '+' 연산자를 'T' 및 'T' 형식에 적용할 수 없습니다.ts(2365)
+
+addFunc2<number>(1, 2); 
+addFunc2(1, 2); // 3
+addFunc2<string>('1', '2');
+addFunc2('1', '2'); // 12
+// addFunc2(1, '2'); // '"2"' 형식의 인수는 '1' 형식의 매개 변수에 할당될 수 없습니다.ts(2345)
+
+// 아래 boolean 값도 넣어지게 됨
+// 이게 안되게 하려면 T에다 제한을 걸어주면 됨
+addFunc2(true, false);
+function addFunc3<T extends number | string>(x: T, y: T): T { return x }
+// T는 number이랑 string만 가능함
+// addFunc3(true, false); // 'boolean' 형식의 인수는 'string | number' 형식의 매개 변수에 할당될 수 없습니다.ts(2345)
+
+// 제네릭을 여러 개 동시에 만들고 각각 다른 제한을 둘 수 있다.
+// 첫번째 거는 숫자, 두번째 거는 문자
+function addFunc4<T extends number, K extends string>(x: T, y: K): T { return x }
+// 제네릭에 뭐가 올 수 있는 지 제한 걸 수 있음
+// string number, string | number
+
+// 바로 타입을 넣어도 된다.
+// <T extends {...}> // 특정 객체
+// <T extends any[]> // 모든 배열
+// <T extends (...args: any) => any> // 모든 함수
+// <T extends abstract new (...args: any) => any> // 생성자 타입
+// <T extends keyof any> // string | number | symbol
+
+// 형태를 제한할 때
+function add5<T extends (a:string) => number>(x: T): T {return x};
+add5((a) => +a)
+
+// 제한이 없다는 걸 표현하고 싶을 때는 any 써도 됨
+function add6<T extends (...args: any) => any>(x: T): T {return x};
+
+// 클래스 자체를 넣고 싶다면 생성자 타입
+function add7<T extends abstract new (...args: any) => any>(x: T): T {return x};
+add7(Bclass);
