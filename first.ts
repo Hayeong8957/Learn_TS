@@ -694,3 +694,82 @@ const a4 = (b: { children: string } = { children: 'hayeong' }) => {
 const add8 = <T = unknown>(x: T, y: T) => ({x, y});
 const add9 = <T extends unknown>(x: T, y: T) => ({x, y});
 const add10 = <T,>(x: T, y: T) => ({x, y});
+
+/************************************************************************************************************/
+
+/** Required, Record, NonNullable 타입 분석 */
+interface Profile {
+  name?: string,
+  age?: number,
+  married?: boolean,
+}
+
+type Name = Profile['name']; // string | undefined
+
+// Required
+type R<T> = {
+  [key in keyof T]-?: T[key];
+  // ?, +? -> optional, non-required
+  // modifier: -? -> non-optional, required -> 물음표 떼고 가져와라.
+}
+
+// Readonly 
+type Ro<T> = {
+  readonly [key in keyof T]: T[key];
+}
+
+// -Readonly -> non-readonly
+type nonReadonly<T> = {
+  -readonly [key in keyof T]: T[key];
+}
+
+{
+  const hayeong: Required<Profile> = { // Required -> 옵셔닝을 모두 다 필수로 바꿔주는 
+    name: 'hayeong',  // required
+    age: 23,          // required
+    married: false    // required
+  }
+  const hayeong2: R<Profile> = { // Required -> 옵셔닝을 모두 다 필수로 바꿔주는 
+    name: 'hayeong',  // required
+    age: 23,          // required
+    married: false    // required
+  }
+  const hayeong3: Readonly<Profile> = { 
+    name: 'hayeong',  // required
+    age: 23,          // required
+    married: false    // required
+  } 
+  // 수정 못하게 막고 싶다? -> Readonly
+  // hayeong3.name = 'yanggaeng'; // error: 읽기 전용 속성이므로 'name'에 할당할 수 없습니다.ts(2540)
+}
+
+// Record -> 객체를 표현하는 하나의 방법
+
+{
+  interface Obj {
+    [key: string]: number
+  }
+
+  // 위에 있는 interface를 간단하게 쓸 수 있게 만든 것
+  const a: Record<string, number> = {a: 3, b: 5, c: 7}
+
+  // Record 타입 , 객체의 키는 string | number | symbol만 올 수 있기에 keyof any를 붙여줘야함
+  type CustomRecord<T extends keyof any, S> = {
+    [key in T]: S;
+  }
+}
+
+// nonnullable
+{
+  type A = string | null | undefined | boolean | number;
+
+  // 새로운 타입을 가져오는데, null과 undefined는 뺴고 가져오고 싶을 때
+  type B = NonNullable<A>; // string | boolean | number
+
+  type CustomNonNullable<T> = T extends null | undefined ? never : T;
+  // T가 null 또는 undefined면 버리고, 아니면 그대로 써
+}
+
+// type들이 key에 적용되는 타입, 객체에 적용되는 타입들이 있음 그것을 구별해야함
+// partial, required, readonly, pick -> interface에 적용되는 애들
+// exclude, extract, nonnullable -> key에 적용됨
