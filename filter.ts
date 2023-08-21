@@ -24,7 +24,53 @@ const filtered2 = ['1', 2, '3', 4, '5'].filter(
 
 // string extends string | number // string | number 안에 string이 속해있음
 
+/************************************* 타입 직접 만들기 *************************************/
+interface CustomArray<T> {
+  filter(callback: (value: T) => boolean): T[];
+  filter<S extends T>(callback: (value: T) => value is S): S[];
+}
+
+{
+  const a: CustomArray<number> = [1, 2, 3];
+  const b = a.filter((value) => value % 2 === 0); // number[]
+
+  const c: CustomArray<number | string> = [1, '2', 3, '4', 5];
+  const d = c.filter((value) => typeof value === 'string'); // (string | number)[]
+  // 타입을 수정해서 d가 string[]로 추론되게
+  const d2 = c.filter((value: string | number): value is string => typeof value === 'string'); // (string | number)[]
+  // 타입을 수정해서 d가 string[]로 추론되게
+}
+
+/******* 연습 *******/
+
 const predicate = (value: string | number): value is string =>
   typeof value === 'string';
 const filtered3 = ['1', 2, '3', 4, '5'].filter(predicate); // string으로 제대로 나옴
 //
+
+/**************/
+
+interface Arr<T> {
+  filter<S extends T>(callback: (v: T) => v is S): S[];
+}
+
+const c: Arr<number | string> = [1, '2', 3, '4', 5];
+const d2 = c.filter((v): v is string => typeof v === 'string');
+
+
+//변경 전
+const predicate2 = (value: string | number): value is string => typeof value === 'string';
+const filterString = ['1', 2, '3', 4, ' 5'].filter(predicate2);
+/**
+ * 
+ * 'string | number' 형식은 'string' 형식에 할당할 수 없습니다.
+          'number' 형식은 'string' 형식에 할당할 수 없습니다.ts(2769) -> value => string | number
+ */
+
+// 변경전
+interface Arr2<T> {
+  filter<S extends T>(callback: (value: T) => value is S): S[];
+}
+
+const ccc: Arr2<number | string> = [1, '2', 3, '4', 5]
+const ddd = ccc.filter((v: string | number): v is string => typeof v === 'string') // ['2', '4'] string[]

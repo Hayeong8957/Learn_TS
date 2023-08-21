@@ -28,3 +28,29 @@ function add<T>(x: T, y: T): T {
 
 add<number>(1, 2); // 제네릭이 뒤에 있으면 제네릭타입 파라미터
 <number>add(1, 2); // 앞에 있으면 강제 타입 변환
+
+/************************************* 타입 직접 만들기 *************************************/
+
+interface CustomArray<T> {
+  forEach(callbackfn: (value: T) => void): void;
+}
+
+const array1: CustomArray<number> = [1,2,3];
+array1.forEach((value) => {
+  console.log(value);
+  // value.toFixed(1);  // => value가 number니까 toFixed를 사용할 수 있어야함. 
+});
+array1.forEach((value) => {
+  console.log(value); 
+  return '2';
+});
+
+const array2: CustomArray<string> = ['1','2','3'];
+array2.forEach((value) => {
+  console.log(value);
+  value.charAt(1); // error : 'string | number' 형식에 'charAt' 속성이 없습니다. 'number' 형식에 'charAt' 속성이 없습니다.ts(2339) => 제네릭이 필요한 이유
+});
+array2.forEach((value) => {
+  console.log(value); 
+  return '2';
+});
