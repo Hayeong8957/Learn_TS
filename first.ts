@@ -555,7 +555,7 @@ interface AAAA {
   b: string;
 }
 
-const aAaAa: AAAA = {a: 'hello', b: 'world'};
+const aAaAa: AAAA = { a: 'hello', b: 'world' };
 // aAaAa.a = '123'; // error: 읽기 전용 속성이므로 'a'에 할당할 수 없습니다.ts(2540)
 // readonly 를 사용해서 우리가 실수로 바꾸는 것을 강제로 금지
 
@@ -564,18 +564,20 @@ const aAaAa: AAAA = {a: 'hello', b: 'world'};
 // type BBBB ={
 //   a:string, b:string, c:string, d:string, e:string //...
 // }
-type BBBB ={
- [key: string]: string
-}
+type BBBB = {
+  [key: string]: string;
+};
 
 /* mapped type */
 // key type을 좁힐 수 있음
 // interface로는 또는이 안됨 |를 쓰려면 type을 써야함
-type BBBBBKey = 'Human' | 'Mammal' | 'Animal'; 
-type BBBBB = {[key in BBBBBKey]: number};
+type BBBBBKey = 'Human' | 'Mammal' | 'Animal';
+type BBBBB = { [key in BBBBBKey]: number };
 const bbbbbb: BBBBB = {
-  Human: 123, Mammal: 5, Animal: 7 // 이런식으로 제한을 걸어줄 수 있다.
-}
+  Human: 123,
+  Mammal: 5,
+  Animal: 7, // 이런식으로 제한을 걸어줄 수 있다.
+};
 
 // 최대한 정확한 타입을 주는 것이 좋음
 
@@ -583,7 +585,7 @@ const bbbbbb: BBBBB = {
 
 class Bclass {
   private readonly a: string = '123';
-  protected b: string = 'world'; 
+  protected b: string = 'world';
   public c: string = 'wow';
 
   method() {
@@ -605,27 +607,27 @@ class C extends Bclass {
 
 /* 옵셔널 */
 // 있어도 되고 없어도 되게 하는 타입
-// 물음표 -> 있어도 되고 없어도 된다. 
+// 물음표 -> 있어도 되고 없어도 된다.
 // 물음표는 항상 속성명 뒤에
-function abc(a: number, b?:number, c?:number){}
-function abcd(...args: number[]){}  // 전부 다 받고 싶으면 이렇게 지정
+function abc(a: number, b?: number, c?: number) {}
+function abcd(...args: number[]) {} // 전부 다 받고 싶으면 이렇게 지정
 
 abc(1);
 abc(1, 2);
 abc(1, 2, 3);
 abcd(1, 2, 3, 4);
 
-let obj2: {a: string, b?: string} = {a: 'hello', b: 'world'}
-obj2 = {a: 'hello'}
+let obj2: { a: string; b?: string } = { a: 'hello', b: 'world' };
+obj2 = { a: 'hello' };
 
 /* 제네릭 */
 // 제네릭이 왜 필요한가
 function addFunc(x: string | number, y: string | number): string | number {
-  return x ;
+  return x;
 }
 
 // 원하는 동작 방식
-addFunc(1,2); // 3
+addFunc(1, 2); // 3
 addFunc('1', '2'); // 12
 
 // 이렇게 될 가능성을 배제하지 못했음 이걸 안되게 해야함
@@ -638,9 +640,11 @@ addFunc(1, '2'); // '12'
 // 범위가 넓다.
 
 // 매개변수를 같은 타입으로 만들어줄 수 있다.
-function addFunc2<T>(x: T, y: T): T { return x  } // '+' 연산자를 'T' 및 'T' 형식에 적용할 수 없습니다.ts(2365)
+function addFunc2<T>(x: T, y: T): T {
+  return x;
+} // '+' 연산자를 'T' 및 'T' 형식에 적용할 수 없습니다.ts(2365)
 
-addFunc2<number>(1, 2); 
+addFunc2<number>(1, 2);
 addFunc2(1, 2); // 3
 addFunc2<string>('1', '2');
 addFunc2('1', '2'); // 12
@@ -649,13 +653,17 @@ addFunc2('1', '2'); // 12
 // 아래 boolean 값도 넣어지게 됨
 // 이게 안되게 하려면 T에다 제한을 걸어주면 됨
 addFunc2(true, false);
-function addFunc3<T extends number | string>(x: T, y: T): T { return x }
+function addFunc3<T extends number | string>(x: T, y: T): T {
+  return x;
+}
 // T는 number이랑 string만 가능함
 // addFunc3(true, false); // 'boolean' 형식의 인수는 'string | number' 형식의 매개 변수에 할당될 수 없습니다.ts(2345)
 
 // 제네릭을 여러 개 동시에 만들고 각각 다른 제한을 둘 수 있다.
 // 첫번째 거는 숫자, 두번째 거는 문자
-function addFunc4<T extends number, K extends string>(x: T, y: K): T { return x }
+function addFunc4<T extends number, K extends string>(x: T, y: K): T {
+  return x;
+}
 // 제네릭에 뭐가 올 수 있는 지 제한 걸 수 있음
 // string number, string | number
 
@@ -667,14 +675,20 @@ function addFunc4<T extends number, K extends string>(x: T, y: K): T { return x 
 // <T extends keyof any> // string | number | symbol
 
 // 형태를 제한할 때
-function add5<T extends (a:string) => number>(x: T): T {return x};
-add5((a) => +a)
+function add5<T extends (a: string) => number>(x: T): T {
+  return x;
+}
+add5((a) => +a);
 
 // 제한이 없다는 걸 표현하고 싶을 때는 any 써도 됨
-function add6<T extends (...args: any) => any>(x: T): T {return x};
+function add6<T extends (...args: any) => any>(x: T): T {
+  return x;
+}
 
 // 클래스 자체를 넣고 싶다면 생성자 타입
-function add7<T extends abstract new (...args: any) => any>(x: T): T {return x};
+function add7<T extends abstract new (...args: any) => any>(x: T): T {
+  return x;
+}
 add7(Bclass);
 
 /************************************************************************************************************/
@@ -682,26 +696,24 @@ add7(Bclass);
 /** 기본값 타이핑 */
 // 타입스크립트가 추론을 못 할 때 기본값을 쓰는 거고,
 // 기본값이 있더라도 추론을 한다면 기본값을 덮어씌워지게 됨
-const a3 = (b: number = 3, c: number = 4 ) => {
+const a3 = (b: number = 3, c: number = 4) => {
   return '3';
-}
+};
 
-const a4 = (b: { children: string } = { children: 'hayeong' }) => {
-
-}
+const a4 = (b: { children: string } = { children: 'hayeong' }) => {};
 // 기본값이 있을 때 타이핑 헷갈림 주의
 // 제네릭도 기본값 넣을 수 있음
-const add8 = <T = unknown>(x: T, y: T) => ({x, y});
-const add9 = <T extends unknown>(x: T, y: T) => ({x, y});
-const add10 = <T,>(x: T, y: T) => ({x, y});
+const add8 = <T = unknown>(x: T, y: T) => ({ x, y });
+const add9 = <T extends unknown>(x: T, y: T) => ({ x, y });
+const add10 = <T>(x: T, y: T) => ({ x, y });
 
 /************************************************************************************************************/
 
 /** Required, Record, NonNullable 타입 분석 */
 interface Profile {
-  name?: string,
-  age?: number,
-  married?: boolean,
+  name?: string;
+  age?: number;
+  married?: boolean;
 }
 
 type Name = Profile['name']; // string | undefined
@@ -711,34 +723,36 @@ type R<T> = {
   [key in keyof T]-?: T[key];
   // ?, +? -> optional, non-required
   // modifier: -? -> non-optional, required -> 물음표 떼고 가져와라.
-}
+};
 
-// Readonly 
+// Readonly
 type Ro<T> = {
   readonly [key in keyof T]: T[key];
-}
+};
 
 // -Readonly -> non-readonly
 type nonReadonly<T> = {
   -readonly [key in keyof T]: T[key];
-}
+};
 
 {
-  const hayeong: Required<Profile> = { // Required -> 옵셔닝을 모두 다 필수로 바꿔주는 
-    name: 'hayeong',  // required
-    age: 23,          // required
-    married: false    // required
-  }
-  const hayeong2: R<Profile> = { // Required -> 옵셔닝을 모두 다 필수로 바꿔주는 
-    name: 'hayeong',  // required
-    age: 23,          // required
-    married: false    // required
-  }
-  const hayeong3: Readonly<Profile> = { 
-    name: 'hayeong',  // required
-    age: 23,          // required
-    married: false    // required
-  } 
+  const hayeong: Required<Profile> = {
+    // Required -> 옵셔닝을 모두 다 필수로 바꿔주는
+    name: 'hayeong', // required
+    age: 23, // required
+    married: false, // required
+  };
+  const hayeong2: R<Profile> = {
+    // Required -> 옵셔닝을 모두 다 필수로 바꿔주는
+    name: 'hayeong', // required
+    age: 23, // required
+    married: false, // required
+  };
+  const hayeong3: Readonly<Profile> = {
+    name: 'hayeong', // required
+    age: 23, // required
+    married: false, // required
+  };
   // 수정 못하게 막고 싶다? -> Readonly
   // hayeong3.name = 'yanggaeng'; // error: 읽기 전용 속성이므로 'name'에 할당할 수 없습니다.ts(2540)
 }
@@ -747,16 +761,16 @@ type nonReadonly<T> = {
 
 {
   interface Obj {
-    [key: string]: number
+    [key: string]: number;
   }
 
   // 위에 있는 interface를 간단하게 쓸 수 있게 만든 것
-  const a: Record<string, number> = {a: 3, b: 5, c: 7}
+  const a: Record<string, number> = { a: 3, b: 5, c: 7 };
 
   // Record 타입 , 객체의 키는 string | number | symbol만 올 수 있기에 keyof any를 붙여줘야함
   type CustomRecord<T extends keyof any, S> = {
     [key in T]: S;
-  }
+  };
 }
 
 // nonnullable
@@ -773,3 +787,84 @@ type nonReadonly<T> = {
 // type들이 key에 적용되는 타입, 객체에 적용되는 타입들이 있음 그것을 구별해야함
 // partial, required, readonly, pick -> interface에 적용되는 애들
 // exclude, extract, nonnullable -> key에 적용됨
+
+/************************************************************************************************************/
+
+/** infer 타입 분석 */
+{
+  // 이 함수의 파라미터와 리턴 타입을 뜯어보자.
+  function zip(
+    x: number,
+    y: string,
+    z: boolean,
+  ): { x: number; y: string; z: boolean } {
+    return { x, y, z };
+  }
+
+  /* Parameter 타입 */
+  // zip함수의 매개변수의 타입들을 가져오고 싶은 상황
+  type Params = Parameters<typeof zip>; // [number, string, boolean] : 튜플 형식으로 나옴
+  type First = Params[0]; // number
+  type Second = Params[1]; // string
+  type Third = Params[2]; // boolean
+  // 타입간에도 key값 꺼내오듯이 배열처럼 나와있으면 index로 접근할 수 있다.
+
+  // parameter 타입 분석
+  type CustomParametersType<T extends (...args: any) => any> = T extends (
+    ...args: infer A
+  ) => any
+    ? A
+    : never;
+  // 함수의 매개변수의 타입들을 가져오려면 T가 함수여야함 => 함수를 제한둬야함.
+  // infer라는 키워드랑 새로운 제네릭이 등장.
+  // infer -> inference(추론하다) => 타입스크립트가 알아서 매개변수 자리를 추론해라 => 추론한 값이 있으면 그걸 쓰고 없으면 쓰지 말아라.
+  type Parameter = CustomParametersType<typeof zip>; // [number, string, boolean]
+
+  /* Return 타입 */
+  type Raturns = ReturnType<typeof zip>; // {x: number; y: string; z: boolean;}
+  // return 타입 분석
+  type CustomReturnType<T extends (...args: any) => any> = T extends (
+    ...args: any
+  ) => infer A
+    ? A
+    : never;
+  type Return = CustomReturnType<typeof zip>; // {x: number, y: string, z: boolean}
+
+  // class의 생성자 타입과 인스턴스 타입을 뜯어보자
+  class A {
+    a: string;
+    b: number;
+    c: boolean;
+    constructor(a: string, b: number, c: boolean) {
+      this.a = a;
+      this.b = b;
+      this.c = c;
+    }
+  }
+
+  const c = new A('123', 456, true);
+  /* constructor 파라미터 타입 */
+  // 생성자 타입 가져올 때가 typeof 클래스가 생성자를 가져오는 것
+  type ConstructorParameters<T extends abstract new (...args: any) => any> =
+    T extends abstract new (...args: infer P) => any ? P : never; // T -> constructor
+  type C = ConstructorParameters<typeof A>; // [a: string, b: number, c: boolean]
+
+  /* instance 타입 -> 생성자 대상 */
+  // 인스턴스 타입 가져올 때가 A 그 자체를 가져오는 것
+  type InstanceType<T extends abstract new (...args: any) => any> =
+    T extends abstract new (...args: any) => infer R ? R : any;
+  type I = InstanceType<typeof A>; // A
+
+  // 클래스는 타입으로 바로 쓸 수 있다. A라는 타입이 있는 것.
+  const a: A = new A('123', 456, true); // 인스턴스 -> new 붙여서 실제 객체로 만들어낸 것
+}
+
+/************************************************************************************************************/
+
+/* intrinsic : 타입스크립트 코드로는 구현이 안되어서 따로 처리를 했다는 뜻 -> 직접 볼 수는 없을 것이다.  */
+// Uppercase, Lowercase, Capitalize, Uncapitalize, ThisType ...
+
+{
+  const a = 'Hello world';
+  const b: Lowercase<typeof a> = 'hello world'; // const b: "hello world"
+}
